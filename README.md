@@ -36,9 +36,7 @@ Pink-themed FHIR R4 patient directory built with React + TypeScript + Vite. Incl
 - `src/App.tsx`   – Layout shell and routes
 - `src/main.tsx`  – App bootstrap with Router
 
-## Usage Notes
-- The public HAPI sandbox often returns many duplicate patients named “JONNY” with the same DOB/gender but different IDs. This is server test data, not a UI bug.
-- The sidebar logo is clickable to return home; the refresh icon refetches patients; the about icon shows “Made by Maher Guerfali”.
+
 
 ## More Details
 See [APPROACH.md](./APPROACH.md) for architectural decisions, tradeoffs, and interview talking points.
