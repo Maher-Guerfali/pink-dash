@@ -29,6 +29,39 @@ Pink-themed FHIR R4 patient directory built with React + TypeScript + Vite. Incl
 - **Chrome**: Sticky top bar (greeting + search), left sidebar (logo → home, refresh button, about popup), footer with links and “Hire Me” CTA that shows a thank-you overlay.
 - **Theme**: Pink primary (#DA418A), dark text, light-gray background.
 
+## FHIR Data Source
+- **API Endpoint**: `https://hapi.fhir.org/baseR4`
+- **Resource Type**: Patient (FHIR R4)
+- **Query**: `GET /Patient?_count={limit}` (returns a Bundle of Patient resources)
+
+## Patient Data Structure
+The app retrieves and displays Patient resources with the following fields:
+```json
+{
+   "resourceType": "Patient",
+   "id": "1373719",
+   "name": [
+      {
+         "use": "official",
+         "family": "Guerfali",
+         "given": ["Maher"]
+      }
+   ],
+   "gender": "male",
+   "birthDate": "1972-10-13",
+   "address": [
+      {
+         "use": "home",
+         "line": ["123 Main St"],
+         "city": "Berlin",
+         "state": "BE",
+         "postalCode": "10115",
+         "country": "Germany"
+      }
+   ]
+}
+```
+
 ## Project Structure
 - `src/services/` – FHIR API calls (axios)
 - `src/types/`    – Typed FHIR Patient/Bundle interfaces
