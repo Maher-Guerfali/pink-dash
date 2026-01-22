@@ -37,6 +37,3 @@ Pink-themed FHIR R4 patient directory built with React + TypeScript + Vite. Incl
 - `src/main.tsx`  – App bootstrap with Router
 
 
-
-## More Details
-See [APPROACH.md](./APPROACH.md) for architectural decisions, tradeoffs, and interview talking points.
