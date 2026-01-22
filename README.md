@@ -2,6 +2,8 @@
 
 Pink-themed FHIR R4 patient directory built with React + TypeScript + Vite. Includes search, pagination, detail view, and branded chrome (sidebar, header, footer).
 
+Demo : https://pink-dash.vercel.app/
+
 ## Quick Start
 1. Install dependencies
    ```bash
