@@ -53,9 +53,9 @@ The app retrieves and displays Patient resources with the following fields:
       {
          "use": "home",
          "line": ["123 Main St"],
-         "city": "Berlin",
-         "state": "BE",
-         "postalCode": "10115",
+         "city": "Munich",
+         "state": "MU",
+         "postalCode": "80995",
          "country": "Germany"
       }
    ]
