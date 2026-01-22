@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
-import { PatientList } from './components/PatientList';
-import { PatientDetail } from './components/PatientDetail';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { PatientList } from './PatientList';
+import { PatientDetail } from './PatientDetail';
+import '../App.css';
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -136,8 +136,8 @@ function App() {
         </footer>
         
         {showThanks && (
-          {/* Full-screen thank-you overlay */}
           <div className="thanks-overlay">
+            {/* Full-screen thank-you overlay */}
             <h1 style={{ fontSize: '6rem', fontWeight: 700, color: '#000000', margin: 0 }}>Thanks</h1>
           </div>
         )}
