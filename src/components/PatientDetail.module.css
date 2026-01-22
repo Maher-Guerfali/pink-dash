@@ -1,0 +1,70 @@
+.container {
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.card {
+  background: #FFFFFF;
+  border: 2px solid #f0f0f0;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 8px 24px rgba(218, 65, 138, 0.08);
+}
+
+.header {
+  border-bottom: 3px solid #DA418A;
+  padding-bottom: 25px;
+  margin-bottom: 30px;
+}
+
+.name {
+  margin: 0;
+  color: rgb(0, 32, 60);
+  font-size: 2.5em;
+  font-weight: 700;
+}
+
+.section {
+  margin-bottom: 30px;
+}
+
+.sectionTitle {
+  font-size: 0.85em;
+  text-transform: uppercase;
+  color: #334E63;
+  margin-bottom: 12px;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+}
+
+.value {
+  font-size: 1.15em;
+  color: rgb(0, 32, 60);
+  line-height: 1.8;
+}
+
+.backButton {
+  background: #DA418A;
+  border: none;
+  color: #FFFFFF;
+  padding: 12px 28px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 600;
+  margin-bottom: 25px;
+  display: inline-block;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(218, 65, 138, 0.2);
+}
+
+.backButton:hover {
+  background: #b8336e;
+  color: #FFFFFF;
+  box-shadow: 0 6px 16px rgba(218, 65, 138, 0.4);
+}
+
+.backButton:active {
+  background: #9a2a5c;
+}
