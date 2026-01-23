@@ -13,6 +13,31 @@ const fhirClient = axios.create({
   }
 });
 
+/**
+ * Helper to extract a user-friendly error message from an API error.
+ */
+export const getUserFriendlyError = (error: unknown): string => {
+  if (axios.isAxiosError(error)) {
+    if (error.response) {
+      // Server responded with a status code outside the 2xx range
+      if (error.response.status === 404) {
+        return 'Resource not found.';
+      }
+      if (error.response.status >= 500) {
+        return 'Server error. Please try again later.';
+      }
+      return `Request failed (${error.response.status}).`;
+    } else if (error.request) {
+      // Request was made but no response received
+      return 'Network error. Please check your connection.';
+    } else {
+      // Other errors
+      return error.message;
+    }
+  }
+  return error instanceof Error ? error.message : 'An unexpected error occurred.';
+};
+
 export const PatientService = {
   /**
    * Fetches a list of patients from the FHIR server.

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { Patient, Address } from '../types/fhir';
-import { PatientService } from '../services/fhirService';
+import { PatientService, getUserFriendlyError } from '../services/fhirService';
+import { ErrorSnackbar } from './ErrorSnackbar';
 import styles from './PatientDetail.module.css';
 
 export const PatientDetail: React.FC = () => {
@@ -25,7 +26,7 @@ export const PatientDetail: React.FC = () => {
       const data = await PatientService.getPatientById(patientId);
       setPatient(data);
     } catch (err) {
-      setError('Failed to load patient details.');
+      setError(getUserFriendlyError(err));
     } finally {
       setLoading(false);
     }
@@ -54,11 +55,25 @@ export const PatientDetail: React.FC = () => {
   };
 
   if (loading) return <div>Loading details...</div>;
-  if (error) return <div role="alert" style={{ color: 'red' }}>{error}</div>;
-  if (!patient) return <div>Patient not found</div>;
+  // if (error) return <div role="alert" style={{ color: 'red' }}>{error}</div>; // Old error handling
+  
+  // If we have no patient and no loading state (likely error or truly not found), show a fallback.
+  // We will display the ErrorSnackbar if 'error' is present regardless.
+  if (!patient) {
+    return (
+      <div className={styles.container}>
+         <button onClick={() => navigate('/')} className={styles.backButton}>
+           ← Back to List
+         </button>
+         <div>{error ? 'Unable to load patient data.' : 'Patient not found.'}</div>
+         {error && <ErrorSnackbar message={error} onClose={() => setError(null)} />}
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
+      {error && <ErrorSnackbar message={error} onClose={() => setError(null)} />}
       <button onClick={() => navigate('/')} className={styles.backButton}>
         ← Back to List
       </button>

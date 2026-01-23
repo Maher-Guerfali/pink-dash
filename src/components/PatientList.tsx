@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Patient } from '../types/fhir';
-import { PatientService } from '../services/fhirService';
+import { PatientService, getUserFriendlyError } from '../services/fhirService';
+import { ErrorSnackbar } from './ErrorSnackbar';
 import styles from './PatientList.module.css';
 
 type PatientListProps = {
@@ -37,7 +38,7 @@ export const PatientList: React.FC<PatientListProps> = ({ searchTerm, refreshKey
       const data = await PatientService.getPatients(retrieveCount);
       setPatients(data);
     } catch (err) {
-      setError('Failed to load patients. Please check your connection or try again later.');
+      setError(getUserFriendlyError(err));
     } finally {
       setLoading(false);
     }
@@ -80,7 +81,7 @@ export const PatientList: React.FC<PatientListProps> = ({ searchTerm, refreshKey
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Patient Directory</h2>
-      {error && <div className={styles.error}>{error}</div>}
+      {error && <ErrorSnackbar message={error} onClose={() => setError(null)} />}
       
       <div className={styles.controls}>
         <div className={styles.pageSizeWrapper}>
