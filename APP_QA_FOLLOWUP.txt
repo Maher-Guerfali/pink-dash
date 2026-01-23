@@ -1,0 +1,59 @@
+================================================================================
+                  TASKPINK APP - FOLLOW-UP Q&A (BEGINNER FRIENDLY)
+================================================================================
+
+1) Why use axios (HTTP client)?
+   - Simpler syntax than fetch; less boilerplate.
+   - Auto JSON handling; fewer manual steps.
+   - Central place for headers/baseURL (see fhirService.ts fhirClient).
+   - Built-in request/response interceptors (future auth/logging).
+   - Better error object (status, data) for debugging.
+
+2) useParams example: const { id } = useParams<{ id: string }>();
+   - URL: /patient/abc123
+   - React Router matches route pattern: /patient/:id
+   - :id is only the dynamic segment AFTER /patient/
+   - So id = "abc123" (not the whole /patient/abc123).
+   - Analogy: Template "/folder/:file" + URL "/folder/readme" → file = "readme".
+
+3) Unit tests present?
+   - No tests are currently implemented in this repo.
+   - If asked: "We have not added unit tests yet; next step would be to test services (API calls) and components (rendering + state)."
+
+4) getPatients(limit = 20): why 20?
+   - Safety/default to avoid huge downloads from the public API.
+   - Limit is configurable: PatientService.getPatients(50) will fetch 50.
+   - The UI lets you choose 10/20/30/50; 20 is just the default.
+
+5) What makes useEffect run in PatientDetail?
+   - Code: useEffect(() => { if (id) fetchPatient(id); }, [id]);
+   - Dependency array [id] means: run once on mount, and again whenever id changes.
+   - The route change (navigate to /patient/123) updates id, which triggers the effect, which calls fetchPatient('123').
+
+6) What is a Bundle response?
+   - The FHIR server returns a JSON object whose resourceType is "Bundle".
+   - Bundle = a wrapper that contains many entries; each entry holds a Patient resource.
+   - We map over bundle.entry to extract entry.resource (the actual Patient objects).
+   - So yes, it is still JSON; it's just JSON with a FHIR Bundle shape.
+
+7) "Fix: Error handling already in code" — where?
+   - fhirService.ts: try/catch with console.error and rethrow.
+   - PatientList.tsx: catch sets error state → UI shows message.
+   - PatientDetail.tsx: catch sets error state → UI shows message.
+
+8) "How does search work?" Can we index?
+   - Current implementation: client-side filter in PatientList.tsx.
+     * Takes the already-fetched patients array.
+     * Converts name/id/gender to lowercase and checks includes(searchTerm).
+   - Indexing idea (not implemented):
+     * For big datasets, add server-side search params (e.g., /Patient?name=John).
+     * Or build a local index/trie/Map by id/name for faster lookups.
+
+9) Axios vs fetch — how does axios handle errors?
+   - Axios rejects the promise for HTTP errors (status outside 2xx).
+   - You can read error.response.status and error.response.data.
+   - In our code, we catch errors in the service and rethrow; UI components set error state and render a message.
+
+================================================================================
+If you want, I can add a short test for PatientService using msw (mock server) or add in-code comments where these behaviors live.
+================================================================================

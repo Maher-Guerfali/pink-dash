@@ -1,0 +1,158 @@
+================================================================================
+                    UNDERSTANDING THE SIMPLE UNIT TEST
+                         Updated for Vitest Mocking
+================================================================================
+
+Let me break down the test file step by step. This version handles the "hoisting" issue we fixed.
+
+
+📄 FILE: src/services/fhirService.test.ts
+================================================================================
+
+
+═══════════════════════════════════════════════════════════════════════════════
+LINE 1-2: IMPORTS
+═══════════════════════════════════════════════════════════════════════════════
+
+import { describe, it, expect, vi } from 'vitest';
+import type { Bundle, Patient } from '../types/fhir';
+
+WHAT'S HAPPENING?
+Getting the tools.
+- vi: The most important tool here. It lets us create fake functions.
+- Bundle, Patient: Types so TypeScript knows what our data looks like.
+
+
+═══════════════════════════════════════════════════════════════════════════════
+LINE 6: CREATING THE MOCK FUNCTION (The Special Part)
+═══════════════════════════════════════════════════════════════════════════════
+
+const mockGet = vi.hoisted(() => vi.fn());
+
+WHAT'S THIS?
+This is the KEY fix we implemented.
+
+Problem: 
+Vitest moves (hoists) `vi.mock()` calls to the very top of the file. 
+If we defined `mockGet` normally, `vi.mock()` would run BEFORE `mockGet` existed.
+Error: "Cannot access mockGet before initialization"
+
+Solution: `vi.hoisted()`
+It tells Vitest: "Please lift this variable to the top too, so it exists when the mock runs."
+
+Result: 
+`mockGet` is our fake function that will replace `axios.get`.
+
+
+═══════════════════════════════════════════════════════════════════════════════
+LINE 9-18: REPLACING AXIOS (The Mock Factory)
+═══════════════════════════════════════════════════════════════════════════════
+
+vi.mock('axios', () => {
+  return {
+    default: {
+      create: vi.fn(() => ({
+        get: mockGet,
+      })),
+    },
+  };
+});
+
+WHAT'S HAPPENING?
+We completely replace the `axios` library with our own object.
+
+Breaking it down:
+1. `vi.mock('axios', ...)`: Interrupts any import of axios.
+2. `default`: Axios is a default import.
+3. `create`: Our service calls `axios.create()`. We mock this function.
+4. `vi.fn(() => ({ get: mockGet }))`:
+   - When `create()` is called...
+   - Return an object: `{ get: mockGet }`
+   - This mimics the real axios client, which has a `.get()` method.
+
+WHY?
+Because `fhirService.ts` looks like this:
+  const fhirClient = axios.create(...)
+  fhirClient.get(...) 
+
+So our mock must support `.create()` returning something with `.get()`.
+
+
+═══════════════════════════════════════════════════════════════════════════════
+LINE 21: IMPORTING THE SERVICE (Timing is Everything)
+═══════════════════════════════════════════════════════════════════════════════
+
+import { PatientService } from './fhirService';
+
+WHAT'S HAPPENING?
+We import the code we want to test.
+
+WHY IS IT HERE?
+It MUST be after the `vi.mock` setup.
+When this line runs, `fhirService.ts` executes.
+It calls `axios.create()`.
+Because we already mocked it, it gets our fake axios.
+
+If we imported this at the top, `axios.create()` might run before our mock was ready!
+
+
+═══════════════════════════════════════════════════════════════════════════════
+LINE 23-49: THE ACTUAL TEST
+═══════════════════════════════════════════════════════════════════════════════
+
+describe('PatientService', () => {
+  it('getPatients should return a list of patients', async () => {
+
+    // 1. SETUP FAKE DATA
+    const fakePatient: Patient = {
+      resourceType: 'Patient',
+      id: '123',
+      name: [{ given: ['John'], family: 'Doe' }],
+    };
+
+    const fakeBundle: Bundle<Patient> = {
+      resourceType: 'Bundle',
+      type: 'searchset',
+      entry: [{ resource: fakePatient }],
+    };
+
+    // 2. PROGRAM THE MOCK
+    mockGet.mockResolvedValue({ data: fakeBundle });
+
+    // 3. RUN REAL CODE
+    const result = await PatientService.getPatients(10);
+
+    // 4. CHECK RESULT
+    expect(result).toEqual([fakePatient]);
+  });
+});
+
+WHAT'S HAPPENING IN STEP 2?
+`mockGet.mockResolvedValue({ data: fakeBundle });`
+
+We tell our hoisted mock function: 
+"Next time someone calls you, don't do anything real. Just return this bundle inside a data object."
+
+This simulates a successful HTTP response 200 OK with JSON data.
+
+
+═══════════════════════════════════════════════════════════════════════════════
+SUMMARY OF THE FLOW
+═══════════════════════════════════════════════════════════════════════════════
+
+1. `vi.hoisted` creates `mockGet` variable.
+2. `vi.mock` replaces `axios`.
+   - It wires up `axios.create` to return an object using `mockGet`.
+3. `import PatientService` runs.
+   - It calls `axios.create()`.
+   - It gets the fake client with `mockGet`.
+4. Test starts.
+5. We set `mockGet` to return fake data.
+6. We call `PatientService.getPatients`.
+   - It calls `mockGet`.
+   - It gets fake data.
+7. We assert the result is correct.
+
+✅ TEST PASSES
+
+This sets you up perfectly for more tests because you have full control over `mockGet`.

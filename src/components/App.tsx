@@ -132,7 +132,7 @@ function App() {
           >
             Hire Me
           </button>
-          <div>© 2026 Radiology Patient Manager | FHIR R4 Integration</div>
+          <div>© 2026 Radiology Patient Manager | FHIR R4 Integration By Maher</div>
         </footer>
         
         {showThanks && (
