@@ -82,3 +82,65 @@ export const PatientService = {
     }
   }
 };
+
+
+
+/*
+// ============================================================================
+// REFERENCE: NATIVE FETCH API IMPLEMENTATION
+// How to perform these requests without Axios, using the browser's built-in Fetch.
+// ============================================================================
+
+export const PatientServiceFetch = {
+  // Fetch list of patients
+  getPatients: async (limit: number = 20): Promise<Patient[]> => {
+    try {
+      const response = await fetch(`${BASE_URL}/Patient?_count=${limit}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/fhir+json'
+        }
+      });
+
+      // Fetch does not throw on 404/500, so we check ok manually
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (!data.entry) {
+        return [];
+      }
+
+      return data.entry
+        .map((entry: any) => entry.resource)
+        .filter((resource: any) => resource.resourceType === 'Patient');
+    } catch (error) {
+      console.error('Error form Fetch API:', error);
+      throw error;
+    }
+  },
+
+  // Fetch single patient
+  getPatientById: async (id: string): Promise<Patient> => {
+    try {
+      const response = await fetch(`${BASE_URL}/Patient/${id}`, {
+        method: 'GET',
+         headers: {
+          'Accept': 'application/fhir+json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error(`Error fetching patient ${id}:`, error);
+      throw error;
+    }
+  }
+};
+*/
